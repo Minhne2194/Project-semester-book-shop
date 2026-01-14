@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  # Service MongoDB
+  mongo_db:
+    image: mongo:latest
+    container_name: bookshop_mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongo_data:/data/db # Dòng này giúp dữ liệu không bị mất khi tắt Docker
+    environment:
+      - MONGO_INITDB_DATABASE=BookShopDB
+
+  # Bạn có thể cài thêm Mongo Express (Giao diện quản lý Web) nếu thích
+  mongo_express:
+    image: mongo-express
+    container_name: bookshop_mongo_express
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo_db
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=pass
+    depends_on:
+      - mongo_db
