@@ -4,19 +4,19 @@ services:
   # Service MongoDB
   mongo_db:
     image: mongo:latest
-    container_name: bookshop_mongo
+    container_name: familybook_mongo
     restart: always
     ports:
       - "27017:27017"
     volumes:
       - ./mongo_data:/data/db # Dòng này giúp dữ liệu không bị mất khi tắt Docker
     environment:
-      - MONGO_INITDB_DATABASE=BookShopDB
+      - MONGO_INITDB_DATABASE=FamilyBookDB
 
   # Bạn có thể cài thêm Mongo Express (Giao diện quản lý Web) nếu thích
   mongo_express:
     image: mongo-express
-    container_name: bookshop_mongo_express
+    container_name: familybook_mongo_express
     restart: always
     ports:
       - "8081:8081"
