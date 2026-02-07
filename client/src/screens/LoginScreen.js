@@ -69,7 +69,8 @@ const LoginScreen = () => {
 
           <Row className='py-3'>
             <Col>
-              Chưa có tài khoản? <Link to='/register'>Đăng ký ngay</Link>
+              Chưa có tài khoản?
+              <Link to={redirect === '/' ? '/register' : `/register?redirect=${redirect}`}></Link>
             </Col>
           </Row>
         </Col>

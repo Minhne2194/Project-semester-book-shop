@@ -1,12 +1,23 @@
 const express = require('express');
 const router = express.Router();
-const { authUser, getUserProfile, updateUserProfile } = require('../controllers/userController');
+// Import tất cả hàm từ userController tại đây
+const { 
+    authUser, 
+    registerUser, 
+    getUserProfile, 
+    updateUserProfile 
+} = require('../controllers/userController');
 const { protect } = require('../middleware/authMiddleware');
-const { registerUser } = require('../controllers/userController')
 
+// Đăng ký user mới
+router.route('/').post(registerUser);
+
+// Đăng nhập
 router.post('/login', authUser);
+
+// Lấy/Sửa thông tin cá nhân (cần đăng nhập)
 router.route('/profile')
     .get(protect, getUserProfile)
     .put(protect, updateUserProfile);
-router.route('/').post(registerUser);
+
 module.exports = router;

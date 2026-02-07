@@ -3,9 +3,7 @@ const User = require('../models/UserModel');
 const generateToken = require('../utils/generateToken');
 const bcrypt = require('bcryptjs');
 
-// @desc    Xử lý đăng nhập & lấy Token
-// @route   POST /api/users/login
-// @access  Public
+// @desc    Đăng nhập
 const authUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
@@ -20,14 +18,13 @@ const authUser = asyncHandler(async (req, res) => {
     });
   } else {
     res.status(401);
-    throw new Error('Email hoặc mật khẩu không đúng');
+    throw new Error('Invalid email or password');
   }
 });
 
+// @desc    Đăng ký
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
-
-  // 1. Kiểm tra xem email đã tồn tại chưa
   const userExists = await User.findOne({ email });
 
   if (userExists) {
@@ -35,12 +32,10 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error('User already exists');
   }
 
-  // 2. Tạo user mới (Mật khẩu sẽ được mã hóa tự động nhờ Middleware trong Model nếu bạn đã setup, 
-  // hoặc mã hóa thủ công tại đây nếu dùng code đơn giản)
   const user = await User.create({
     name,
     email,
-    password: bcrypt.hashSync(password, 10), // Mã hóa password
+    password: bcrypt.hashSync(password, 10),
   });
 
   if (user) {
@@ -49,7 +44,7 @@ const registerUser = asyncHandler(async (req, res) => {
       name: user.name,
       email: user.email,
       isAdmin: user.isAdmin,
-      token: generateToken(user._id), // Trả về token để đăng nhập luôn
+      token: generateToken(user._id),
     });
   } else {
     res.status(400);
@@ -57,9 +52,9 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Lấy thông tin profile
 const getUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
-
   if (user) {
     res.json({
       _id: user._id,
@@ -73,21 +68,18 @@ const getUserProfile = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Cập nhật thông tin User
-// @route   PUT /api/users/profile
-// @access  Private
+// @desc    Cập nhật profile
 const updateUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
 
   if (user) {
     user.name = req.body.name || user.name;
-    // Nếu user nhập pass mới thì cập nhật, không thì thôi
+    user.email = req.body.email || user.email;
     if (req.body.password) {
       user.password = bcrypt.hashSync(req.body.password, 10);
     }
 
     const updatedUser = await user.save();
-
     res.json({
       _id: updatedUser._id,
       name: updatedUser.name,
@@ -101,4 +93,5 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { authUser, getUserProfile, updateUserProfile, registerUser };
+// EXPORT ĐẦY ĐỦ CÁC HÀM
+module.exports = { authUser, registerUser, getUserProfile, updateUserProfile };

@@ -1,22 +1,31 @@
 import React, { useEffect } from 'react';
-import { Row, Col, ListGroup, Image, Card, Container } from 'react-bootstrap';
+import { Row, Col, ListGroup, Image, Card, Container, Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
-import { getOrderDetails } from '../slices/orderSlice';
+import { getOrderDetails, deliverOrder, orderDeliverReset } from '../slices/orderSlice'; // <--- Thêm deliverOrder, orderDeliverReset
 
 const OrderScreen = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
 
+  // Lấy thông tin User để check Admin
+  const userLogin = useSelector((state) => state.userLogin);
+  const { userInfo } = userLogin;
+
   const orderState = useSelector((state) => state.orderCreate);
-  const { order, loading, error } = orderState;
+  const { order, loading, error, successDeliver, loadingDeliver } = orderState; // <--- Lấy thêm successDeliver
 
   useEffect(() => {
-    // Nếu chưa có order hoặc ID order không khớp với URL thì gọi API lấy lại
-    if (!order || order._id !== id) {
-        dispatch(getOrderDetails(id));
+    // Nếu chưa có order, hoặc ID khác URL, hoặc vừa Duyệt đơn xong (successDeliver)
+    if (!order || order._id !== id || successDeliver) {
+        dispatch(orderDeliverReset()); // Reset trạng thái duyệt
+        dispatch(getOrderDetails(id)); // Gọi API lấy lại dữ liệu mới nhất
     }
-  }, [dispatch, id, order]);
+  }, [dispatch, id, order, successDeliver]);
+
+  const deliverHandler = () => {
+    dispatch(deliverOrder(order));
+  };
 
   // --- 1. MÀN HÌNH ĐANG TẢI ---
   if (loading) {
@@ -36,7 +45,7 @@ const OrderScreen = () => {
       );
   }
 
-  // --- 3. KIỂM TRA DỮ LIỆU RỖNG (Quan trọng để tránh lỗi toLocaleString) ---
+  // --- 3. KIỂM TRA DỮ LIỆU RỖNG ---
   if (!order) {
       return <Container className="mt-5"><h4>Không tìm thấy đơn hàng</h4></Container>;
   }
@@ -56,7 +65,7 @@ const OrderScreen = () => {
                 {order.shippingAddress?.address}, {order.shippingAddress?.city}, {order.shippingAddress?.phone}
               </p>
               {order.isDelivered ? (
-                <div className='alert alert-success'>Đã giao hàng lúc {order.deliveredAt}</div>
+                <div className='alert alert-success'>Đã giao hàng lúc {order.deliveredAt?.substring(0, 10)}</div>
               ) : (
                 <div className='alert alert-danger'>Chưa giao hàng</div>
               )}
@@ -66,7 +75,7 @@ const OrderScreen = () => {
               <h2>Thanh toán</h2>
               <p><strong>Phương thức: </strong> {order.paymentMethod}</p>
               {order.isPaid ? (
-                <div className='alert alert-success'>Đã thanh toán lúc {order.paidAt}</div>
+                <div className='alert alert-success'>Đã thanh toán lúc {order.paidAt?.substring(0, 10)}</div>
               ) : (
                 <div className='alert alert-danger'>Chưa thanh toán (COD)</div>
               )}
@@ -107,7 +116,6 @@ const OrderScreen = () => {
               <ListGroup.Item>
                 <Row>
                     <Col>Tiền hàng</Col>
-                    {/* Thêm || 0 để tránh lỗi nếu dữ liệu chưa kịp về */}
                     <Col>{(order.itemsPrice || 0).toLocaleString('vi-VN')} đ</Col>
                 </Row>
               </ListGroup.Item>
@@ -123,7 +131,22 @@ const OrderScreen = () => {
                     <Col><strong>{(order.totalPrice || 0).toLocaleString('vi-VN')} đ</strong></Col>
                 </Row>
               </ListGroup.Item>
-              {/* Nút thanh toán (Nếu muốn phát triển thêm Momo/Paypal sau này) */}
+
+              {/* --- NÚT DUYỆT ĐƠN CHO ADMIN --- */}
+              {loadingDeliver && <ListGroup.Item>Đang xử lý...</ListGroup.Item>}
+              
+              {userInfo && userInfo.isAdmin && !order.isDelivered && (
+                <ListGroup.Item>
+                  <Button
+                    type='button'
+                    className='btn btn-block w-100'
+                    onClick={deliverHandler}
+                  >
+                    Đánh dấu Đã Giao Hàng
+                  </Button>
+                </ListGroup.Item>
+              )}
+
             </ListGroup>
           </Card>
         </Col>
