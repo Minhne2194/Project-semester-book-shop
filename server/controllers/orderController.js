@@ -56,4 +56,38 @@ const getMyOrders = asyncHandler(async (req, res) => {
   res.json(orders);
 });
 
-module.exports = { addOrderItems, getOrderById, getMyOrders };
+// @desc    Get all orders (admin)
+// @route   GET /api/orders
+// @access  Private/Admin
+const getOrders = asyncHandler(async (req, res) => {
+  const orders = await Order.find({}).populate('user', 'name email');
+  res.json(orders);
+});
+
+// @desc    Update order status (paid / delivered) - admin
+// @route   PUT /api/orders/:id
+// @access  Private/Admin
+const updateOrderStatus = asyncHandler(async (req, res) => {
+  const order = await Order.findById(req.params.id);
+
+  if (!order) {
+    res.status(404);
+    throw new Error('Order not found');
+  }
+
+  // Allow toggling fields if provided
+  if (req.body.isPaid !== undefined) {
+    order.isPaid = req.body.isPaid;
+    order.paidAt = req.body.isPaid ? Date.now() : null;
+  }
+
+  if (req.body.isDelivered !== undefined) {
+    order.isDelivered = req.body.isDelivered;
+    order.deliveredAt = req.body.isDelivered ? Date.now() : null;
+  }
+
+  const updated = await order.save();
+  res.json(updated);
+});
+
+module.exports = { addOrderItems, getOrderById, getMyOrders, getOrders, updateOrderStatus };

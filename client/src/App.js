@@ -13,6 +13,13 @@ import PlaceOrderScreen from './screens/PlaceOrderScreen';
 import OrderScreen from './screens/OrderScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import RegisterScreen from './screens/RegisterScreen';
+import BookListScreen from './screens/BookListScreen';
+import BookEditScreen from './screens/BookEditScreen';
+import OrderListScreen from './screens/OrderListScreen';
+import ShopScreen from './screens/ShopScreen';
+import BlogScreen from './screens/BlogScreen';
+import VirtualLibrarian from './components/VirtualLibrarian';
+import SearchScreen from './screens/SearchScreen';
 
 const App = () => {
   return (
@@ -32,11 +39,18 @@ const App = () => {
             <Route path='/order/:id' element={<OrderScreen />} />
             <Route path='/profile' element={<ProfileScreen />} />
             <Route path='/register' element={<RegisterScreen />} />
+            <Route path='/admin/booklist' element={<BookListScreen />} />
+            <Route path='/admin/book/:id/edit' element={<BookEditScreen />} />
+            <Route path='/admin/orderlist' element={<OrderListScreen />} />
+            <Route path='/shop' element={<ShopScreen />} />
+            <Route path='/blog' element={<BlogScreen />} />
+            <Route path='/search' element={<SearchScreen />} />
           </Routes>
         </Container>
       </main>
 
       <Footer />
+      <VirtualLibrarian />
     </Router>
   );
 };

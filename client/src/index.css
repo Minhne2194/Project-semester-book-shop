@@ -7,7 +7,376 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Global layout helpers */
+.section {
+  padding: 60px 0;
+}
+
+.hero-brown {
+  background: #5b4437;
+  color: #f4e9df;
+  border-radius: 18px;
+  padding: 48px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-brown::after {
+  content: '';
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.12), transparent 60%);
+  top: -60px;
+  right: -40px;
+}
+
+.badge-soft {
+  background: rgba(255,255,255,0.14);
+  color: #f4e9df;
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+.card-elevated {
+  border: none;
+  box-shadow: 0 12px 35px rgba(0,0,0,0.08);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.card-elevated:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.12);
+}
+
+.pill-filter {
+  border: 1px solid #d0c4ba;
+  color: #5b4437;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: #fff;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.pill-filter.active {
+  background: #5b4437;
+  color: #f4e9df;
+  border-color: #5b4437;
+}
+
+.mini-meta {
+  color: #6b6b6b;
+  font-size: 13px;
+}
+
+/* Virtual Librarian */
+.librarian-shell {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.librarian-fab {
+  background: #b48366;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 14px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.librarian-fab:hover {
+  background: #a16f55;
+}
+
+.librarian-panel {
+  width: 340px;
+  margin-top: 12px;
+  overflow: hidden;
+  border: none;
+  border-radius: 14px;
+}
+
+.librarian-head {
+  background: #b48366;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: none;
+}
+
+.librarian-title {
+  font-weight: 700;
+}
+
+.librarian-sub {
+  font-size: 12px;
+  color: #f7f1ec;
+}
+
+.librarian-body {
+  padding: 12px 12px 4px 12px;
+  background: #faf7f4;
+  max-height: 380px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.librarian-chat {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chat-bubble {
+  padding: 10px 12px;
+  border-radius: 12px;
+  max-width: 85%;
+  line-height: 1.4;
+  font-size: 14px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+}
+
+.chat-bubble.ai {
+  background: #ffffff;
+  color: #3c2a22;
+  align-self: flex-start;
+}
+
+.chat-bubble.user {
+  background: #e9d7cb;
+  color: #2f2018;
+  align-self: flex-end;
+}
+
+.librarian-input {
+  display: flex;
+  gap: 8px;
+  padding: 8px 10px;
+  background: #fff;
+  border-top: 1px solid #f0e5dc;
+}
+
+.librarian-input input {
+  background: #f7f2ee;
+  border: 1px solid #e5d7ce;
+}
+
+.librarian-input button {
+  background: #b48366;
+  border: none;
+}
+
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* Best seller section */
+.best-section {
+  margin-top: 30px;
+}
+
+.best-title {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 18px;
+  position: relative;
+  display: inline-block;
+}
+
+.best-title::after {
+  content: '';
+  display: block;
+  width: 90px;
+  height: 4px;
+  background: #b48366;
+  margin-top: 6px;
+  border-radius: 999px;
+}
+
+.best-card {
+  border: none;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.best-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 34px rgba(0,0,0,0.12);
+}
+
+.best-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  padding: 6px 10px;
+}
+
+.best-category {
+  color: #b48366;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.6px;
+  margin-bottom: 4px;
+}
+
+.best-title-sm {
+  font-weight: 800;
+  font-size: 17px;
+  line-height: 1.2;
+}
+
+.best-author {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.best-rating {
+  font-size: 13px;
+  color: #f1a500;
+  margin-bottom: 6px;
+}
+
+.best-desc {
+  color: #4a4a4a;
+  font-size: 14px;
+}
+
+.best-price {
+  font-weight: 800;
+  color: #1f1f2b;
+}
+
+/* Product detail page */
+.product-title {
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.product-author {
+  font-size: 14px;
+}
+
+.product-rating {
+  color: #f1a500;
+  font-weight: 600;
+}
+
+.product-desc {
+  color: #3c3c3c;
+}
+
+.product-highlight ul {
+  padding-left: 18px;
+  color: #3c3c3c;
+}
+
+.product-spec .spec-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+}
+
+.product-cover {
+  background: #fff;
+}
+
+.product-price {
+  font-weight: 800;
+  font-size: 20px;
+  color: #1f1f2b;
+}
+
+/* Shop filter chips */
+.filter-bar {
+  background: #f7f8ff;
+  border: 1px solid #e7e9f3;
+}
+
+.filter-title {
+  font-weight: 700;
+  color: #333;
+}
+
+.chip {
+  border: 1px solid #d4d7e5;
+  background: #fff;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.chip.active,
+.chip:hover {
+  background: #b48366;
+  color: #fff;
+  border-color: #b48366;
+}
+
+.chip-sm {
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.filter-panel {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* ===== Brown theme overrides ===== */
+:root {
+  --brown-main: #b48366;
+  --brown-dark: #7a5035;
+  --brown-soft: #fcf7f2;
+}
+
+.btn-primary { background-color: var(--brown-main); border-color: var(--brown-main); }
+.btn-primary:hover,
+.btn-primary:focus { background-color: var(--brown-dark); border-color: var(--brown-dark); }
+.btn-outline-primary { color: var(--brown-main); border-color: var(--brown-main); }
+.btn-outline-primary:hover,
+.btn-outline-primary:focus { background-color: var(--brown-main); border-color: var(--brown-main); color: #fff; }
+.badge.bg-info { background-color: var(--brown-main) !important; }
+.product-theme { background: var(--brown-soft); border-radius: 18px; padding: 8px 12px; }
+
+/* Book image ratio */
+.book-thumb {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+}
+
+/* Cart drawer */
+.offcanvas-end {
+  width: 360px;
+}
+
+.offcanvas-title {
+  font-weight: 700;
 }

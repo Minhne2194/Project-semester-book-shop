@@ -1,15 +1,19 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const path = require('path'); // <--- 1. Thêm dòng này
 const connectDB = require('./config/db');
 const bookRoutes = require('./routes/bookRoutes');
 const userRoutes = require('./routes/userRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 
-dotenv.config();
+// 2. Cấu hình trỏ ra thư mục cha (Root) để lấy file .env
+dotenv.config({ path: path.join(__dirname, '../.env') });
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// 3. Kết nối DB
 connectDB();
 
 app.use(cors());
