@@ -32,3 +32,6 @@ Thumbs.db
 # Ignore temporary files
 *.log
 *.tmp
+
+tree.txt
+*.log
