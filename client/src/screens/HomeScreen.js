@@ -99,11 +99,12 @@ const HomeScreen = () => {
 
         <Row>
           {bestSellers.map((product) => (
-            // SỬA: Dùng lg={3} xl={3} để hiện 4 cột/hàng
-            <Col key={product._id} xs={12} sm={6} lg={3} xl={3} className="mb-4">
+            // Thêm class d-flex justify-content-center để căn giữa thẻ Card trong cột
+            <Col key={product._id} xs={12} sm={6} lg={3} xl={3} className="mb-4 d-flex justify-content-center">
               <Card 
                   className="h-100 border-0 shadow-sm" 
-                  style={{ borderRadius: '12px', overflow: 'hidden', backgroundColor: '#fff', cursor: 'pointer' }}
+                  // SỬA: Thêm width: '286px'
+                  style={{ width: '286px', borderRadius: '12px', overflow: 'hidden', backgroundColor: '#fff', cursor: 'pointer' }}
                   onClick={() => openDetail(product)}
               >
                 {/* Phần hình ảnh */}
@@ -111,15 +112,14 @@ const HomeScreen = () => {
                   <Card.Img 
                       variant="top" 
                       src={product.image} 
-                      // SỬA: Giảm height còn 220px
-                      style={{ height: '220px', objectFit: 'cover' }} 
+                      // SỬA: Thay height cố định bằng aspectRatio: '2/3'
+                      style={{ aspectRatio: '2/3', objectFit: 'cover' }} 
                   />
                   
                   {/* Badge Phổ biến */}
                   {product.numReviews > 50 && (
                     <span 
                       className="position-absolute top-0 end-0 m-3 px-3 py-1 text-white fw-bold"
-                      // SỬA: Giảm font size badge còn 10px
                       style={{ 
                           backgroundColor: '#ef4444', 
                           borderRadius: '20px', 
@@ -136,14 +136,12 @@ const HomeScreen = () => {
                 <Card.Body className="d-flex flex-column p-3">
                   {/* Category & Rating */}
                   <div className="d-flex justify-content-between align-items-center mb-2">
-                      {/* SỬA: Font size 10px */}
                       <span 
                           className="text-uppercase fw-bold" 
                           style={{ fontSize: '10px', color: '#d97706', letterSpacing: '0.5px' }}
                       >
                           {product.category || 'VĂN HỌC'}
                       </span>
-                      {/* SỬA: Font size 12px */}
                       <span style={{ fontSize: '12px', color: '#f59e0b' }}>
                             ⭐ {product.rating || 0}
                       </span>
@@ -152,7 +150,6 @@ const HomeScreen = () => {
                   {/* Title */}
                   <Card.Title 
                       className="mb-1"
-                      // SỬA: Giảm font size tiêu đề còn 16px
                       style={{ 
                           fontWeight: 700, 
                           fontSize: '16px', 
@@ -165,7 +162,6 @@ const HomeScreen = () => {
                   </Card.Title>
 
                   {/* Author */}
-                  {/* SỬA: Font size 12px */}
                   <div className="mb-3 text-muted" style={{ fontSize: '12px' }}>
                       {product.author}
                   </div>
@@ -173,7 +169,6 @@ const HomeScreen = () => {
                   {/* Description */}
                   <Card.Text 
                       className="flex-grow-1" 
-                      // SỬA: Font size 12px
                       style={{ 
                           fontSize: '12px', 
                           color: '#6b7280', 
@@ -192,7 +187,6 @@ const HomeScreen = () => {
                     style={{ borderColor: '#f1f5f9' }}
                   >
                     <div className="d-flex flex-column">
-                      {/* SỬA: Giảm font giá còn 16px */}
                       <span style={{ fontSize: '16px', fontWeight: 700, color: '#92400e' }}>
                         {Number(product.price).toLocaleString('vi-VN')}&nbsp;₫
                       </span>
@@ -203,7 +197,6 @@ const HomeScreen = () => {
                     
                     <button
                       className="btn d-flex align-items-center"
-                      // SỬA: Padding nhỏ hơn (6px 10px) và font 13px
                       style={{
                           backgroundColor: '#0f172a',
                           color: 'white',
@@ -241,17 +234,20 @@ const HomeScreen = () => {
           </h2>
           <Row>
             {expertPicks.map((product) => (
-              <Col key={product._id} xs={12} sm={6} lg={3} xl={3} className="mb-4">
+              // Thêm class d-flex justify-content-center
+              <Col key={product._id} xs={12} sm={6} lg={3} xl={3} className="mb-4 d-flex justify-content-center">
                 <Card
                   className="h-100 border-0 shadow-sm"
-                  style={{ borderRadius: '12px', overflow: 'hidden', backgroundColor: '#fff', cursor: 'pointer' }}
+                  // SỬA: Thêm width: '286px'
+                  style={{ width: '286px', borderRadius: '12px', overflow: 'hidden', backgroundColor: '#fff', cursor: 'pointer' }}
                   onClick={() => openDetail(product)}
                 >
                   <div className="position-relative">
                     <Card.Img
                       variant="top"
                       src={product.image}
-                      style={{ height: '200px', objectFit: 'cover' }}
+                      // SỬA: Thay height cố định bằng aspectRatio: '2/3'
+                      style={{ aspectRatio: '2/3', objectFit: 'cover' }}
                     />
                     <span
                       className="position-absolute top-0 end-0 m-3 px-3 py-1 text-white fw-bold"
