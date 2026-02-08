@@ -1,28 +1,92 @@
-version: '3.8'
-
 services:
-  # Service MongoDB
-  mongo_db:
-    image: mongo:latest
+  # MongoDB Database
+  mongo:
+    image: mongo:8.0
     container_name: bookshop_mongo
-    restart: always
+    restart: unless-stopped
     ports:
       - "27017:27017"
     volumes:
-      - ./mongo_data:/data/db # Dòng này giúp dữ liệu không bị mất khi tắt Docker
+      - mongo_data:/data/db
+      - mongo_config:/data/configdb
     environment:
-      - MONGO_INITDB_DATABASE=BookShopDB
+      MONGO_INITDB_DATABASE: BookShopDB
+    networks:
+      - bookshop_network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  # Bạn có thể cài thêm Mongo Express (Giao diện quản lý Web) nếu thích
-  mongo_express:
-    image: mongo-express
+  # MongoDB Express (Optional Web UI)
+  mongo-express:
+    image: mongo-express:1.0
     container_name: bookshop_mongo_express
-    restart: always
+    restart: unless-stopped
     ports:
       - "8081:8081"
     environment:
-      - ME_CONFIG_MONGODB_SERVER=mongo_db
-      - ME_CONFIG_BASICAUTH_USERNAME=admin
-      - ME_CONFIG_BASICAUTH_PASSWORD=pass
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_URL: mongodb://mongo:27017/
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: pass
+    networks:
+      - bookshop_network
     depends_on:
-      - mongo_db
+      mongo:
+        condition: service_healthy
+
+  # Backend Server
+  server:
+    build:
+      context: ./server
+      target: production
+      dockerfile: Dockerfile
+    container_name: bookshop_server
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      MONGO_URI: mongodb://mongo:27017/BookShopDB
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+    networks:
+      - bookshop_network
+    depends_on:
+      mongo:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:5000', (r) => process.exit(r.statusCode === 200 ? 0 : 1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Frontend Client
+  client:
+    build:
+      context: ./client
+      target: production
+      dockerfile: Dockerfile
+    container_name: bookshop_client
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    networks:
+      - bookshop_network
+    depends_on:
+      server:
+        condition: service_healthy
+
+networks:
+  bookshop_network:
+    driver: bridge
+
+volumes:
+  mongo_data:
+    driver: local
+  mongo_config:
+    driver: local
