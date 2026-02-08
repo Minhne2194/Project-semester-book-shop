@@ -1,7 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
-const path = require('path'); // <--- 1. Thêm dòng này
+const path = require('path');
 const connectDB = require('./config/db');
 const bookRoutes = require('./routes/bookRoutes');
 const userRoutes = require('./routes/userRoutes');

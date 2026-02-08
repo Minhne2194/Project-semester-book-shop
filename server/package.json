@@ -1,7 +1,7 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "",
+  "description": "Book Shop API Server",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -9,13 +9,26 @@
     "dev": "nodemon index.js",
     "data:import": "node seeder.js",
     "data:destroy": "node seeder.js -d",
-    "data:google": "node scripts/importGoogleBooks.js --limit=50"
+    "data:destroy:books": "node seeder.js -d --books",
+    "data:export": "node scripts/exportData.js",
+    "data:restore": "node seeder.js -json",
+    "data:clean": "node scripts/cleanBackup.js",
+    "get:openlib:finance": "node scripts/importOpenLibrary.js --limit=20 --q='finance'",
+    "get:openlib:scifi": "node scripts/importOpenLibrary.js --limit=20 --q='science fiction'",
+    "get:openlib:random": "node scripts/importOpenLibrary.js --random --limit=20",
+    "get:random5:100": "node scripts/importDiverseBooks.js"
   },
-  "keywords": [],
+  "keywords": [
+    "nodejs",
+    "express",
+    "mongodb",
+    "bookshop"
+  ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@iamtraction/google-translate": "^2.0.1",
     "axios": "^1.13.4",
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.9.0",
