@@ -32,7 +32,3 @@ Thumbs.db
 # Ignore temporary files
 *.log
 *.tmp
-cay_thu_muc.txt
-
-# Ignore documentation artifacts
-SRS-demo/
