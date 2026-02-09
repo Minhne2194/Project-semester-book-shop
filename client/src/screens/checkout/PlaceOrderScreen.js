@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import { Button, Row, Col, ListGroup, Image, Card, Container } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import CheckoutSteps from '../components/CheckoutSteps';
-import { createOrder, orderCreateReset } from '../slices/orderSlice';
+import CheckoutSteps from '../../components/CheckoutSteps';
+import { createOrder, orderCreateReset } from '../../slices/orderSlice';
 
 const PlaceOrderScreen = () => {
   const dispatch = useDispatch();

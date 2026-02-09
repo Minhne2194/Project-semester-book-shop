@@ -3,7 +3,7 @@ import { Row, Col, Card, Button, Form } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { addToCart } from '../slices/cartSlice';
+import { addToCart } from '../../slices/cartSlice';
 
 // Dữ liệu tĩnh
 const pricePresets = [

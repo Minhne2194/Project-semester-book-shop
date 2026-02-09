@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Row, Col, ListGroup, Image, Card, Container } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
-import { getOrderDetails } from '../slices/orderSlice';
+import { getOrderDetails } from '../../slices/orderSlice';
 
 const OrderScreen = () => {
   const { id } = useParams();

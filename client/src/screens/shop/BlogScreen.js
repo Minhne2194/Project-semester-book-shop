@@ -48,6 +48,9 @@ const BlogScreen = () => {
               <Card.Text style={{ color: '#4a4a4a' }}>{post.excerpt}</Card.Text>
               <div className="mini-meta d-flex justify-content-between align-items-center">
                 <span>Bởi {post.author}</span>
+                
+                {/* Dòng này sẽ tắt cảnh báo cho thẻ a ở dưới */}
+                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                 <a href="#" style={{ color: '#b48366', fontWeight: 600, textDecoration: 'none' }}>Đọc tiếp →</a>
               </div>
             </div>

@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux'; // Hook để lấy dữ liệu từ Redux
 import { Row, Col, ListGroup, Image, Form, Button, Card } from 'react-bootstrap';
-import { addToCart, removeFromCart } from '../slices/cartSlice'; // Import các hành động
+import { addToCart, removeFromCart } from '../../slices/cartSlice'; // Import các hành động
 
 const CartScreen = () => {
   const navigate = useNavigate();

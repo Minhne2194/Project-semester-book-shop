@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { Row, Col, Image, Card, Button, Container, Badge } from 'react-bootstrap';
 import axios from 'axios';
-import { addToCart } from '../slices/cartSlice';
+import { addToCart } from '../../slices/cartSlice';
 
 const ProductScreen = () => {
   const [product, setProduct] = useState({});

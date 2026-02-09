@@ -3,8 +3,8 @@ import { Form, Button, Row, Col, Table, Container } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { updateUserProfile } from '../slices/userSlice';
-import { listMyOrders } from '../slices/orderSlice'; // Import hàm lấy danh sách đơn
+import { updateUserProfile } from '../../slices/userSlice';
+import { listMyOrders } from '../../slices/orderSlice'; // Import hàm lấy danh sách đơn
 
 const ProfileScreen = () => {
   const [name, setName] = useState('');

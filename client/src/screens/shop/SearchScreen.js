@@ -3,7 +3,7 @@ import { Row, Col, Card, Badge } from 'react-bootstrap';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
-import { addToCart } from '../slices/cartSlice';
+import { addToCart } from '../../slices/cartSlice';
 
 const SearchScreen = () => {
   const location = useLocation();

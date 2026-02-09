@@ -2,63 +2,56 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Form, Button, Row, Col, Container } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { register } from '../slices/userSlice'; // Import hàm register
+import { login, clearError } from '../../slices/userSlice'; // Đảm bảo đường dẫn đúng
 
-const RegisterScreen = () => {
-  const [name, setName] = useState('');
+const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [message, setMessage] = useState(null);
 
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
 
   const userLogin = useSelector((state) => state.userLogin);
-  const { loading, error, userInfo } = userLogin;
+  // Kiểm tra xem state có đúng cấu trúc không
+  console.log("Current Redux State (userLogin):", userLogin); 
+  
+  const { loading, error, userInfo } = userLogin || {}; // Thêm || {} để tránh lỗi nếu state undefined
 
   const redirect = location.search ? location.search.split('=')[1] : '/';
 
   useEffect(() => {
     if (userInfo) {
+      console.log("User logged in, redirecting to:", redirect);
       navigate(redirect);
     }
   }, [navigate, userInfo, redirect]);
 
+  useEffect(() => {
+    return () => {
+      if (error) {
+        dispatch(clearError());
+      }
+    };
+  }, [dispatch, error]);
+
   const submitHandler = (e) => {
     e.preventDefault();
-    // Kiểm tra mật khẩu nhập lại
-    if (password !== confirmPassword) {
-      setMessage('Mật khẩu không khớp!');
-    } else {
-      dispatch(register(name, email, password));
-    }
+    dispatch(login(email, password));
   };
 
   return (
     <Container>
       <Row className='justify-content-md-center'>
         <Col xs={12} md={6}>
-          <h1>Đăng Ký Tài Khoản</h1>
-          
-          {message && <div className='alert alert-danger'>{message}</div>}
+          <h1 className='my-3'>Đăng Nhập</h1>
+
           {error && <div className='alert alert-danger'>{error}</div>}
-          {loading && <div>Đang xử lý...</div>}
+          {loading && <div className='my-2'>Đang tải...</div>}
 
           <Form onSubmit={submitHandler}>
-            <Form.Group controlId='name'>
-              <Form.Label>Họ và Tên</Form.Label>
-              <Form.Control
-                type='name'
-                placeholder='Nhập họ tên'
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
-
             <Form.Group controlId='email'>
-              <Form.Label className='mt-3'>Địa chỉ Email</Form.Label>
+              <Form.Label>Địa chỉ Email</Form.Label>
               <Form.Control
                 type='email'
                 placeholder='Nhập email'
@@ -77,24 +70,14 @@ const RegisterScreen = () => {
               ></Form.Control>
             </Form.Group>
 
-            <Form.Group controlId='confirmPassword'>
-              <Form.Label className='mt-3'>Xác nhận mật khẩu</Form.Label>
-              <Form.Control
-                type='password'
-                placeholder='Nhập lại mật khẩu'
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
-
             <Button type='submit' variant='primary' className='mt-3'>
-              Đăng Ký
+              Đăng Nhập
             </Button>
           </Form>
 
           <Row className='py-3'>
             <Col>
-              Đã có tài khoản? <Link to='/login'>Đăng nhập</Link>
+              Chưa có tài khoản? <Link to={redirect ? `/register?redirect=${redirect}` : '/register'}>Đăng ký ngay</Link>
             </Col>
           </Row>
         </Col>
@@ -103,4 +86,4 @@ const RegisterScreen = () => {
   );
 };
 
-export default RegisterScreen;
+export default LoginScreen;
