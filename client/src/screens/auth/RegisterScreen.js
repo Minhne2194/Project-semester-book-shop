@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Form, Button, Row, Col, Container } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { register } from '../../slices/userSlice'; // Import hàm register
+import { register } from '../../slices/userSlice';
 
 const RegisterScreen = () => {
   const [name, setName] = useState('');
@@ -16,7 +16,8 @@ const RegisterScreen = () => {
   const dispatch = useDispatch();
 
   const userLogin = useSelector((state) => state.userLogin);
-  const { loading, error, userInfo } = userLogin;
+  // Thêm || {} để tránh lỗi nếu state undefined
+  const { loading, error, userInfo } = userLogin || {};
 
   const redirect = location.search ? location.search.split('=')[1] : '/';
 
@@ -28,7 +29,6 @@ const RegisterScreen = () => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    // Kiểm tra mật khẩu nhập lại
     if (password !== confirmPassword) {
       setMessage('Mật khẩu không khớp!');
     } else {
@@ -36,67 +36,117 @@ const RegisterScreen = () => {
     }
   };
 
+  // Các biến màu sắc đồng bộ với trang Login
+  const brandColor = '#d81e5b';
+  const textColor = '#333';
+
   return (
-    <Container>
-      <Row className='justify-content-md-center'>
+    <Container className="py-5">
+      <Row className="justify-content-md-center">
         <Col xs={12} md={6}>
-          <h1>Đăng Ký Tài Khoản</h1>
-          
-          {message && <div className='alert alert-danger'>{message}</div>}
-          {error && <div className='alert alert-danger'>{error}</div>}
-          {loading && <div>Đang xử lý...</div>}
+          {/* Tiêu đề nằm ngoài khung Box */}
+          <h2 style={{ color: '#2b3a4a', marginBottom: '20px', fontFamily: 'serif' }}>
+            Đăng Ký Tài Khoản
+          </h2>
 
-          <Form onSubmit={submitHandler}>
-            <Form.Group controlId='name'>
-              <Form.Label>Họ và Tên</Form.Label>
-              <Form.Control
-                type='name'
-                placeholder='Nhập họ tên'
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
+          {/* Box chứa Form */}
+          <div
+            style={{
+              border: '1px solid #e0e0e0',
+              padding: '40px',
+              backgroundColor: '#fff',
+              borderRadius: '4px'
+            }}
+          >
+            {message && <div className="alert alert-danger">{message}</div>}
+            {error && <div className="alert alert-danger">{error}</div>}
+            {loading && <div className="my-2">Đang xử lý...</div>}
 
-            <Form.Group controlId='email'>
-              <Form.Label className='mt-3'>Địa chỉ Email</Form.Label>
-              <Form.Control
-                type='email'
-                placeholder='Nhập email'
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
+            <Form onSubmit={submitHandler}>
+              <Form.Group controlId="name" className="mb-3">
+                <Form.Label style={{ color: textColor }}>Họ và Tên</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Nhập họ tên"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  style={{ borderRadius: '4px', padding: '10px' }}
+                />
+              </Form.Group>
 
-            <Form.Group controlId='password'>
-              <Form.Label className='mt-3'>Mật khẩu</Form.Label>
-              <Form.Control
-                type='password'
-                placeholder='Nhập mật khẩu'
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
+              <Form.Group controlId="email" className="mb-3">
+                <Form.Label style={{ color: textColor }}>Địa chỉ Email</Form.Label>
+                <Form.Control
+                  type="email"
+                  placeholder="Nhập email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  style={{ borderRadius: '4px', padding: '10px' }}
+                />
+              </Form.Group>
 
-            <Form.Group controlId='confirmPassword'>
-              <Form.Label className='mt-3'>Xác nhận mật khẩu</Form.Label>
-              <Form.Control
-                type='password'
-                placeholder='Nhập lại mật khẩu'
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
+              <Form.Group controlId="password" className="mb-3">
+                <Form.Label style={{ color: textColor }}>Mật khẩu</Form.Label>
+                <Form.Control
+                  type="password"
+                  placeholder="Nhập mật khẩu"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  style={{ borderRadius: '4px', padding: '10px' }}
+                />
+              </Form.Group>
 
-            <Button type='submit' variant='primary' className='mt-3'>
-              Đăng Ký
-            </Button>
-          </Form>
+              <Form.Group controlId="confirmPassword" className="mb-4">
+                <Form.Label style={{ color: textColor }}>Xác nhận mật khẩu</Form.Label>
+                <Form.Control
+                  type="password"
+                  placeholder="Nhập lại mật khẩu"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  style={{ borderRadius: '4px', padding: '10px' }}
+                />
+              </Form.Group>
 
-          <Row className='py-3'>
-            <Col>
-              Đã có tài khoản? <Link to='/login'>Đăng nhập</Link>
-            </Col>
-          </Row>
+              {/* Đoạn text điều khoản (rất phù hợp cho trang đăng ký) */}
+              <p style={{ fontSize: '15px', color: '#333', marginBottom: '25px' }}>
+                Bằng cách tạo tài khoản, bạn đồng ý với{' '}
+                <Link to="/privacy" style={{ color: brandColor, textDecoration: 'none' }}>
+                  Thông Báo Bảo Mật
+                </Link>{' '}
+                và{' '}
+                <Link to="/terms" style={{ color: brandColor, textDecoration: 'none' }}>
+                  Điều Khoản Sử Dụng
+                </Link>{' '}
+                của chúng tôi.
+              </p>
+
+              <Button
+                type="submit"
+                style={{
+                  backgroundColor: brandColor,
+                  borderColor: brandColor,
+                  borderRadius: '25px',
+                  padding: '10px 30px',
+                  fontWeight: 'bold',
+                  textTransform: 'uppercase'
+                }}
+              >
+                Đăng Ký
+              </Button>
+            </Form>
+
+            {/* Link chuyển về trang đăng nhập */}
+            <div className="mt-4" style={{ fontSize: '15px' }}>
+              Đã có tài khoản?{' '}
+              <Link
+                to={redirect !== '/' ? `/login?redirect=${redirect}` : '/login'}
+                style={{ color: brandColor, textDecoration: 'none' }}
+              >
+                Đăng nhập
+              </Link>
+            </div>
+
+          </div>
         </Col>
       </Row>
     </Container>

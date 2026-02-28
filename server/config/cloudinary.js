@@ -1,6 +1,5 @@
-// config/cloudinary.js
 const cloudinary = require('cloudinary').v2;
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const CloudinaryStorage = require('multer-storage-cloudinary');
 const multer = require('multer');
 const dotenv = require('dotenv');
 
@@ -12,12 +11,10 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-const storage = new CloudinaryStorage({
+const storage = CloudinaryStorage({
   cloudinary: cloudinary,
-  params: {
-    folder: 'bookshop', // Tên thư mục trên Cloudinary
-    allowed_formats: ['jpg', 'png', 'jpeg', 'webp'],
-  },
+  folder: 'bookshop',
+  allowedFormats: ['jpg', 'png', 'jpeg', 'webp'],
 });
 
 const upload = multer({ storage: storage });

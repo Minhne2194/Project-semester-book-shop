@@ -35,16 +35,16 @@ if (process.env.CLOUDINARY_URL || (process.env.CLOUDINARY_CLOUD_NAME && process.
 
 // --- 3. DANH SÁCH CHỦ ĐỀ ---
 const ALL_SUBJECTS = [
-    'science_fiction', 'romance', 'mystery', 'horror', 'historical_fiction', 
-    'fantasy', 'thriller', 'biography', 'history', 'cooking', 
-    'art', 'music', 'business', 'psychology', 'programming', 
-    'finance', 'health', 'travel', 'science', 'chemistry'
+  'science_fiction', 'romance', 'mystery', 'horror', 'historical_fiction',
+  'fantasy', 'thriller', 'biography', 'history', 'cooking',
+  'art', 'music', 'business', 'psychology', 'programming',
+  'finance', 'health', 'travel', 'science', 'chemistry'
 ];
 
 // Hàm chọn ngẫu nhiên N phần tử từ mảng
 function getRandomSubjects(arr, n) {
-    const shuffled = arr.sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, n);
+  const shuffled = arr.sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, n);
 }
 
 const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
@@ -52,15 +52,15 @@ const translationCache = new Map();
 
 // --- 4. HÀM DỊCH THUẬT ---
 async function toVietnamese(text) {
-    if (!text) return '';
-    if (translationCache.has(text)) return translationCache.get(text);
-    try {
-        const res = await translate(text, { to: 'vi' });
-        translationCache.set(text, res.text);
-        return res.text;
-    } catch (err) {
-        return text;
-    }
+  if (!text) return '';
+  if (translationCache.has(text)) return translationCache.get(text);
+  try {
+    const res = await translate(text, { to: 'vi' });
+    translationCache.set(text, res.text);
+    return res.text;
+  } catch (err) {
+    return text;
+  }
 }
 
 // --- 5. HÀM FETCH CHO 1 CHỦ ĐỀ ---
@@ -77,7 +77,7 @@ async function fetchBooksBySubject(subject) {
         params: {
           q: subject,
           page: page,
-          limit: 20, 
+          limit: 20,
           fields: 'title,author_name,cover_i,isbn,first_sentence,subject,ratings_average,ratings_count,key'
         }
       });
@@ -85,15 +85,15 @@ async function fetchBooksBySubject(subject) {
       if (!data.docs || data.docs.length === 0) break;
 
       const validBooks = data.docs.filter(doc => doc.cover_i);
-      
+
       for (const doc of validBooks) {
-          if (results.length < LIMIT_PER_SUBJECT) {
-              // Kiểm tra xem sách này đã có trong DB chưa (tránh trùng lặp toàn cục)
-              // Tuy nhiên ở đây chỉ check trong mẻ hiện tại cho nhanh
-              if (!results.some(r => r.key === doc.key)) {
-                  results.push(doc);
-              }
+        if (results.length < LIMIT_PER_SUBJECT) {
+          // Kiểm tra xem sách này đã có trong DB chưa (tránh trùng lặp toàn cục)
+          // Tuy nhiên ở đây chỉ check trong mẻ hiện tại cho nhanh
+          if (!results.some(r => r.key === doc.key)) {
+            results.push(doc);
           }
+        }
       }
       page++;
       await sleep(500);
@@ -126,15 +126,15 @@ async function processSingleBook(doc, subjectContext) {
   const imageUrl = await uploadImage(originalImageUrl);
 
   const rawSubject = doc.subject && doc.subject.length > 0 ? doc.subject[0] : subjectContext;
-  const rawDesc = doc.first_sentence 
-    ? (Array.isArray(doc.first_sentence) ? doc.first_sentence[0] : doc.first_sentence) 
+  const rawDesc = doc.first_sentence
+    ? (Array.isArray(doc.first_sentence) ? doc.first_sentence[0] : doc.first_sentence)
     : `A book about ${subjectContext}.`;
 
   // Dịch
   const [vnTitle, vnDesc, vnCategory] = await Promise.all([
-      toVietnamese(doc.title),
-      toVietnamese(rawDesc),
-      toVietnamese(rawSubject)
+    toVietnamese(doc.title),
+    toVietnamese(rawDesc),
+    toVietnamese(rawSubject)
   ]);
 
   return {
@@ -142,7 +142,7 @@ async function processSingleBook(doc, subjectContext) {
     author: doc.author_name ? doc.author_name[0] : 'Unknown',
     description: vnDesc || rawDesc,
     category: mapCategory(vnCategory),
-    price: randomPrice(), 
+    price: randomPrice(),
     image: imageUrl,
     rating: doc.ratings_average ? doc.ratings_average.toFixed(1) : (Math.random() * 2 + 3).toFixed(1),
     numReviews: doc.ratings_count || Math.floor(Math.random() * 50),
@@ -165,31 +165,31 @@ async function run() {
 
     // Chạy vòng lặp qua từng chủ đề
     for (const subject of selectedSubjects) {
-        // 1. Fetch
-        const rawBooks = await fetchBooksBySubject(subject);
-        if (rawBooks.length === 0) continue;
+      // 1. Fetch
+      const rawBooks = await fetchBooksBySubject(subject);
+      if (rawBooks.length === 0) continue;
 
-        console.log(`   -> Tìm thấy ${rawBooks.length} cuốn cho "${subject}". Đang xử lý & dịch...`);
+      console.log(`   -> Tìm thấy ${rawBooks.length} cuốn cho "${subject}". Đang xử lý & dịch...`);
 
-        // 2. Process & Translate
-        const processedBooks = [];
-        const BATCH_SIZE = 3;
-        for (let i = 0; i < rawBooks.length; i += BATCH_SIZE) {
-            const batch = rawBooks.slice(i, i + BATCH_SIZE);
-            const results = await Promise.all(batch.map(b => processSingleBook(b, subject)));
-            processedBooks.push(...results);
-            process.stdout.write('.');
-            await sleep(300); // Nghỉ tránh google ban
-        }
-        
-        // 3. Save to DB
-        try {
-            await Book.insertMany(processedBooks, { ordered: false });
-            console.log(`\n   ✅ Đã lưu xong ${processedBooks.length} cuốn chủ đề "${subject}"!`);
-            totalImported += processedBooks.length;
-        } catch (e) {
-            console.log(`\n   ⚠️ Một số sách bị trùng.`);
-        }
+      // 2. Process & Translate
+      const processedBooks = [];
+      const BATCH_SIZE = 3;
+      for (let i = 0; i < rawBooks.length; i += BATCH_SIZE) {
+        const batch = rawBooks.slice(i, i + BATCH_SIZE);
+        const results = await Promise.all(batch.map(b => processSingleBook(b, subject)));
+        processedBooks.push(...results);
+        process.stdout.write('.');
+        await sleep(300); // Nghỉ tránh google ban
+      }
+
+      // 3. Save to DB
+      try {
+        await Book.insertMany(processedBooks, { ordered: false });
+        console.log(`\n   ✅ Đã lưu xong ${processedBooks.length} cuốn chủ đề "${subject}"!`);
+        totalImported += processedBooks.length;
+      } catch (e) {
+        console.log(`\n   ⚠️ Một số sách bị trùng.`);
+      }
     }
 
     console.log(`\n🎉 TỔNG KẾT: Đã thêm thành công ${totalImported} cuốn sách đa dạng!`);

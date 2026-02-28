@@ -37,11 +37,11 @@ if (hasCloudinaryUrl || hasCloudinaryKeys) {
   const cld = require('cloudinary').v2;
   if (hasCloudinaryUrl) cld.config({ secure: true });
   else cld.config({
-      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-      api_key: process.env.CLOUDINARY_API_KEY,
-      api_secret: process.env.CLOUDINARY_API_SECRET,
-      secure: true
-    });
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+    secure: true
+  });
   cloudinary = cld;
   console.log('✅ Cloudinary đã sẵn sàng.');
 }
@@ -56,9 +56,9 @@ const args = process.argv.slice(2).reduce((acc, cur) => {
 }, {});
 
 const RANDOM_SUBJECTS = [
-    'science_fiction', 'romance', 'mystery', 'horror', 'historical_fiction', 
-    'fantasy', 'thriller', 'biography', 'history', 'cooking', 
-    'art', 'music', 'business', 'psychology', 'programming', 'finance'
+  'science_fiction', 'romance', 'mystery', 'horror', 'historical_fiction',
+  'fantasy', 'thriller', 'biography', 'history', 'cooking',
+  'art', 'music', 'business', 'psychology', 'programming', 'finance'
 ];
 
 const IS_RANDOM = !!args.random;
@@ -69,34 +69,34 @@ let QUERY = args.q;
 let START_PAGE = 1;
 
 if (IS_RANDOM) {
-    if (!QUERY) {
-        QUERY = RANDOM_SUBJECTS[Math.floor(Math.random() * RANDOM_SUBJECTS.length)];
-    }
-    START_PAGE = Math.floor(Math.random() * 50) + 1;
+  if (!QUERY) {
+    QUERY = RANDOM_SUBJECTS[Math.floor(Math.random() * RANDOM_SUBJECTS.length)];
+  }
+  START_PAGE = Math.floor(Math.random() * 50) + 1;
 } else {
-    QUERY = QUERY || 'programming';
+  QUERY = QUERY || 'programming';
 }
 
 const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
 
 // --- 4. HÀM DỊCH THUẬT (AUTO TRANSLATE) ---
 async function toVietnamese(text) {
-    if (!text) return '';
-    try {
-        // Dịch sang tiếng Việt ('vi')
-        const res = await translate(text, { to: 'vi' });
-        return res.text;
-    } catch (err) {
-        // Nếu lỗi dịch (do mạng hoặc quá tải), trả về text gốc tiếng Anh
-        return text;
-    }
+  if (!text) return '';
+  try {
+    // Dịch sang tiếng Việt ('vi')
+    const res = await translate(text, { to: 'vi' });
+    return res.text;
+  } catch (err) {
+    // Nếu lỗi dịch (do mạng hoặc quá tải), trả về text gốc tiếng Anh
+    return text;
+  }
 }
 
 // --- 5. HÀM FETCH ---
 async function fetchFromOpenLibrary() {
   const results = [];
   let page = START_PAGE;
-  
+
   console.log(`📡 OpenLibrary: Tìm "${QUERY}" (Page: ${page})...`);
 
   while (results.length < LIMIT) {
@@ -106,7 +106,7 @@ async function fetchFromOpenLibrary() {
         params: {
           q: QUERY,
           page: page,
-          limit: 20, 
+          limit: 20,
           fields: 'title,author_name,cover_i,isbn,first_sentence,subject,ratings_average,ratings_count,key'
         }
       });
@@ -128,7 +128,7 @@ async function fetchFromOpenLibrary() {
 
       process.stdout.write(`   -> Đã lấy ${results.length}/${LIMIT} cuốn...\r`);
       page++;
-      await sleep(1000); 
+      await sleep(1000);
 
     } catch (error) {
       console.error('\n❌ Lỗi Fetch:', error.message);
@@ -166,17 +166,17 @@ async function processSingleBook(doc) {
 
   // 2. Chuẩn bị dữ liệu thô (Tiếng Anh)
   const rawSubject = doc.subject && doc.subject.length > 0 ? doc.subject[0] : 'General';
-  const rawDesc = doc.first_sentence 
-    ? (Array.isArray(doc.first_sentence) ? doc.first_sentence[0] : doc.first_sentence) 
+  const rawDesc = doc.first_sentence
+    ? (Array.isArray(doc.first_sentence) ? doc.first_sentence[0] : doc.first_sentence)
     : `A book about ${QUERY}.`;
   const rawTitle = doc.title;
 
   // 3. [QUAN TRỌNG] Dịch sang Tiếng Việt
   // Dịch song song để tiết kiệm thời gian
   const [vnTitle, vnDesc, vnCategory] = await Promise.all([
-      toVietnamese(rawTitle),
-      toVietnamese(rawDesc),
-      toVietnamese(rawSubject)
+    toVietnamese(rawTitle),
+    toVietnamese(rawDesc),
+    toVietnamese(rawSubject)
   ]);
 
   return {
@@ -184,7 +184,7 @@ async function processSingleBook(doc) {
     author: doc.author_name ? doc.author_name[0] : 'Unknown Author',
     description: vnDesc || rawDesc,      // Mô tả tiếng Việt
     category: mapCategory(vnCategory),   // Category tiếng Việt
-    price: randomPrice(), 
+    price: randomPrice(),
     image: imageUrl,
     rating: doc.ratings_average ? doc.ratings_average.toFixed(1) : (Math.random() * 2 + 3).toFixed(1),
     numReviews: doc.ratings_count || Math.floor(Math.random() * 50),
@@ -197,25 +197,25 @@ const translationCache = new Map();
 
 // --- 4. HÀM DỊCH THUẬT (AUTO TRANSLATE) ---
 async function toVietnamese(text) {
-    if (!text) return '';
-    
-    // 1. Kiểm tra xem đã dịch từ này chưa?
-    if (translationCache.has(text)) {
-        return translationCache.get(text); // Trả về ngay lập tức, không gọi Google
-    }
+  if (!text) return '';
 
-    try {
-        // 2. Nếu chưa, gọi Google Translate
-        const res = await translate(text, { to: 'vi' });
-        const translatedText = res.text;
+  // 1. Kiểm tra xem đã dịch từ này chưa?
+  if (translationCache.has(text)) {
+    return translationCache.get(text); // Trả về ngay lập tức, không gọi Google
+  }
 
-        // 3. Lưu vào bộ nhớ đệm để dùng lần sau
-        translationCache.set(text, translatedText);
-        
-        return translatedText;
-    } catch (err) {
-        return text;
-    }
+  try {
+    // 2. Nếu chưa, gọi Google Translate
+    const res = await translate(text, { to: 'vi' });
+    const translatedText = res.text;
+
+    // 3. Lưu vào bộ nhớ đệm để dùng lần sau
+    translationCache.set(text, translatedText);
+
+    return translatedText;
+  } catch (err) {
+    return text;
+  }
 }
 
 async function run() {
@@ -232,19 +232,19 @@ async function run() {
     if (rawBooks.length === 0) return process.exit(0);
 
     console.log('🔄 Đang xử lý ảnh và DỊCH sang Tiếng Việt...');
-    
+
     const processedBooks = [];
     // Giảm Batch size xuống 3 để tránh Google Translate chặn vì spam request
-    const BATCH_SIZE = 3; 
+    const BATCH_SIZE = 3;
 
     for (let i = 0; i < rawBooks.length; i += BATCH_SIZE) {
       const batch = rawBooks.slice(i, i + BATCH_SIZE);
       const results = await Promise.all(batch.map(processSingleBook));
       processedBooks.push(...results);
-      
+
       process.stdout.write('.');
       // Nghỉ 1 chút sau mỗi batch để Google không chặn IP
-      await sleep(500); 
+      await sleep(500);
     }
 
     await Book.insertMany(processedBooks, { ordered: false });
