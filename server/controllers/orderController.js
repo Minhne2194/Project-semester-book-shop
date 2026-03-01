@@ -89,5 +89,54 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
   const updated = await order.save();
   res.json(updated);
 });
+// @desc    Thống kê doanh thu (admin)
+// @route   GET /api/orders/stats
+// @access  Private/Admin
+const getOrderStats = asyncHandler(async (req, res) => {
+  const orders = await Order.find({});
 
-module.exports = { addOrderItems, getOrderById, getMyOrders, getOrders, updateOrderStatus };
+  // Tổng doanh thu
+  const totalRevenue = orders
+    .filter(o => o.isPaid)
+    .reduce((acc, o) => acc + o.totalPrice, 0);
+
+  // Tổng đơn hàng
+  const totalOrders = orders.length;
+  const paidOrders = orders.filter(o => o.isPaid).length;
+  const deliveredOrders = orders.filter(o => o.isDelivered).length;
+  const pendingOrders = orders.filter(o => !o.isPaid).length;
+
+  // Doanh thu theo tháng (12 tháng gần nhất)
+  const monthlyRevenue = Array(12).fill(0);
+  const monthlyOrders = Array(12).fill(0);
+  const now = new Date();
+
+  orders.filter(o => o.isPaid).forEach(o => {
+    const paidDate = new Date(o.paidAt);
+    const monthDiff = (now.getFullYear() - paidDate.getFullYear()) * 12 + now.getMonth() - paidDate.getMonth();
+    if (monthDiff >= 0 && monthDiff < 12) {
+      monthlyRevenue[11 - monthDiff] += o.totalPrice;
+      monthlyOrders[11 - monthDiff]++;
+    }
+  });
+
+  // Label tháng
+  const months = Array(12).fill(0).map((_, i) => {
+    const d = new Date();
+    d.setMonth(d.getMonth() - (11 - i));
+    return `T${d.getMonth() + 1}/${d.getFullYear()}`;
+  });
+
+  res.json({
+    totalRevenue,
+    totalOrders,
+    paidOrders,
+    deliveredOrders,
+    pendingOrders,
+    monthlyRevenue,
+    monthlyOrders,
+    months,
+  });
+});
+
+module.exports = { addOrderItems, getOrderById, getMyOrders, getOrders, updateOrderStatus, getOrderStats };

@@ -116,7 +116,14 @@ const Header = () => {
                   <LinkContainer to="/admin/orderlist">
                     <NavDropdown.Item>Quản lý đơn hàng</NavDropdown.Item>
                   </LinkContainer>
+                  <LinkContainer to="/admin/userlist">
+                    <NavDropdown.Item>Quản lý người dùng</NavDropdown.Item>
+                  </LinkContainer>
+                  <LinkContainer to="/admin/dashboard">
+                    <NavDropdown.Item>Thống kê doanh thu</NavDropdown.Item>
+                  </LinkContainer>
                 </NavDropdown>
+
               )}
 
               {userInfo ? (

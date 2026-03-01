@@ -31,7 +31,8 @@ import BookListScreen from './screens/admin/BookListScreen';
 import BookEditScreen from './screens/admin/BookEditScreen';
 import BookAddScreen from './screens/admin/BookAddScreen'; // <--- MỚI: Import trang thêm sách
 import OrderListScreen from './screens/admin/OrderListScreen';
-
+import UserListScreen from './screens/admin/UserListScreen';
+import DashboardScreen from './screens/admin/DashboardScreen';
 const App = () => {
   return (
     <Router>
@@ -62,10 +63,10 @@ const App = () => {
             {/* --- ADMIN ROUTES --- */}
             <Route path='/admin/orderlist' element={<OrderListScreen />} />
             <Route path='/admin/booklist' element={<BookListScreen />} />
-            
+            <Route path='/admin/userlist' element={<UserListScreen />} />
             {/* Route cho thêm sách mới (Nên đặt trước route :id để tránh conflict) */}
             <Route path='/admin/book/add' element={<BookAddScreen />} /> 
-            
+            <Route path='/admin/dashboard' element={<DashboardScreen />} />
             <Route path='/admin/book/:id/edit' element={<BookEditScreen />} />
           </Routes>
         </Container>

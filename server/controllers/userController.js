@@ -96,5 +96,47 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     throw new Error('User not found');
   }
 });
+// @desc    Lấy tất cả users (Admin)
+// @route   GET /api/users
+// @access  Admin
+const getUsers = asyncHandler(async (req, res) => {
+  const users = await User.find({});
+  res.json(users);
+});
 
-module.exports = { authUser, getUserProfile, updateUserProfile, registerUser };
+// @desc    Xóa user (Admin)
+// @route   DELETE /api/users/:id
+// @access  Admin
+const deleteUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
+  if (user) {
+    await user.deleteOne();
+    res.json({ message: 'Đã xóa user' });
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+
+// @desc    Cập nhật user (Admin)
+// @route   PUT /api/users/:id
+// @access  Admin
+const updateUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
+  if (user) {
+    user.name = req.body.name || user.name;
+    user.email = req.body.email || user.email;
+    user.isAdmin = req.body.isAdmin !== undefined ? req.body.isAdmin : user.isAdmin;
+    const updatedUser = await user.save();
+    res.json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      isAdmin: updatedUser.isAdmin,
+    });
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+module.exports = { authUser, getUserProfile, updateUserProfile, registerUser, getUsers, deleteUser, updateUser };
