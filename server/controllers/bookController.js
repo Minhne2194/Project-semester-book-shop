@@ -98,11 +98,41 @@ const deleteBook = asyncHandler(async (req, res) => {
         throw new Error('Không tìm thấy sách');
     }
 });
+// @desc    Thêm review cho sách
+// @route   POST /api/books/:id/reviews
+// @access  Private
+const createBookReview = asyncHandler(async (req, res) => {
+  const { rating, comment } = req.body;
+  const book = await Book.findById(req.params.id);
 
-module.exports = {
-    getBooks,
-    getBookById,
-    createBook,
-    updateBook,
-    deleteBook,
-};
+  if (!book) {
+    res.status(404);
+    throw new Error('Không tìm thấy sách');
+  }
+
+  // Kiểm tra đã review chưa
+  const alreadyReviewed = book.reviews.find(
+    (r) => r.user.toString() === req.user._id.toString()
+  );
+
+  if (alreadyReviewed) {
+    res.status(400);
+    throw new Error('Bạn đã đánh giá sách này rồi');
+  }
+
+  const review = {
+    name: req.user.name,
+    rating: Number(rating),
+    comment,
+    user: req.user._id,
+  };
+
+  book.reviews.push(review);
+  book.numReviews = book.reviews.length;
+  book.rating = book.reviews.reduce((acc, r) => acc + r.rating, 0) / book.reviews.length;
+
+  await book.save();
+  res.status(201).json({ message: 'Đã thêm đánh giá' });
+});
+
+module.exports = { getBooks, getBookById, createBook, updateBook, deleteBook, createBookReview };
