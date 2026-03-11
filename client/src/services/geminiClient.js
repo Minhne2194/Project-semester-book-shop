@@ -30,7 +30,7 @@ export const sendMessageToGemini = async (message, history = []) => {
   try {
     // Lấy 4 tin nhắn gần nhất để làm ngữ cảnh ngắn gọn
     const recentHistory = Array.isArray(history) ? history.slice(-4).join('\n') : '';
-    
+
     const prompt = `
 Lịch sử trò chuyện (ngắn):
 ${recentHistory}
@@ -39,7 +39,7 @@ Người dùng: ${message}
 `;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
+      model: 'gemini-1.5-flash',
       contents: prompt,
       config: {
         systemInstruction: SYSTEM_INSTRUCTION,
