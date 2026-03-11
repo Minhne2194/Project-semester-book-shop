@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Card, Button, Form, Spinner } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
 import { sendMessageToGemini } from '../services/geminiClient';
 
 const quickTopics = [
@@ -14,7 +13,6 @@ const VirtualLibrarian = () => {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([]);
-  const navigate = useNavigate();
   const bodyRef = useRef(null);
 
   // greet once when opened
