@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Image, Card, Button, Container, Badge } from 'react-bootstrap';
 import axios from 'axios';
 import { addToCart } from '../../slices/cartSlice';
@@ -10,10 +10,17 @@ const ProductScreen = () => {
   const [allProducts, setAllProducts] = useState([]);
   const [qty, setQty] = useState(1);
   const [activeTab, setActiveTab] = useState('desc');
+  // ✅ THÊM MỚI: state cho đánh giá
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState('');
+  const [reviewSuccess, setReviewSuccess] = useState(false);
+  const [reviewError, setReviewError] = useState('');
 
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  // ✅ THÊM MỚI: lấy thông tin user
+  const { userInfo } = useSelector((state) => state.userLogin);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,6 +39,30 @@ const ProductScreen = () => {
     };
     fetchData();
   }, [id]);
+
+  // ✅ THÊM MỚI: hàm gửi đánh giá
+  const submitReviewHandler = async (e) => {
+    e.preventDefault();
+    setReviewError('');
+    setReviewSuccess(false);
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${userInfo.token}`,
+          'Content-Type': 'application/json'
+        }
+      };
+      await axios.post(`/api/books/${id}/reviews`, { rating, comment }, config);
+      setReviewSuccess(true);
+      setComment('');
+      setRating(5);
+      // Reload lại sản phẩm để cập nhật số sao
+      const { data } = await axios.get(`/api/books/${id}`);
+      setProduct(data);
+    } catch (err) {
+      setReviewError(err.response?.data?.message || 'Có lỗi xảy ra');
+    }
+  };
 
   const related = useMemo(() => {
     if (!allProducts.length || !product.category) return [];
@@ -55,7 +86,6 @@ const ProductScreen = () => {
 
   if (!product._id) return <div className="text-center py-5">Đang tải dữ liệu...</div>;
 
-  // Component Icon Chevron Right (Mũi tên)
   const ChevronRight = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#9ca3af', margin: '0 8px', flexShrink: 0 }}>
       <polyline points="9 18 15 12 9 6"></polyline>
@@ -70,7 +100,6 @@ const ProductScreen = () => {
         className="d-flex align-items-center mb-4 text-muted select-none" 
         style={{ fontSize: '14px', overflowX: 'auto', whiteSpace: 'nowrap', scrollbarWidth: 'none' }}
       >
-        {/* 1. Trang chủ */}
         <span 
           onClick={() => navigate('/')} 
           style={{ cursor: 'pointer', transition: 'color 0.2s' }}
@@ -82,7 +111,6 @@ const ProductScreen = () => {
         
         <ChevronRight />
         
-        {/* 2. Cửa hàng */}
         <span 
           onClick={() => navigate('/shop')} 
           style={{ cursor: 'pointer', transition: 'color 0.2s' }}
@@ -92,7 +120,6 @@ const ProductScreen = () => {
           Cửa hàng sách
         </span>
 
-        {/* 3. Danh mục (nếu có) */}
         {product.category && (
           <>
             <ChevronRight />
@@ -102,18 +129,17 @@ const ProductScreen = () => {
           </>
         )}
 
-        {/* 4. Tên sách (MỚI THÊM) */}
         {product.title && (
           <>
             <ChevronRight />
             <span 
               className="text-dark fw-bold" 
               style={{ 
-                maxWidth: '250px',       // Giới hạn chiều dài tên sách
-                overflow: 'hidden',      // Ẩn phần thừa
-                textOverflow: 'ellipsis' // Thêm dấu ...
+                maxWidth: '250px',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
               }}
-              title={product.title}      // Hover vào sẽ hiện full tên
+              title={product.title}
             >
               {product.title}
             </span>
@@ -124,7 +150,6 @@ const ProductScreen = () => {
       {/* --- PRODUCT MAIN CARD --- */}
       <Card className="shadow-sm border-0 mb-5" style={{ borderRadius: '16px', overflow: 'hidden' }}>
         <Row className="g-0">
-          {/* Cột Trái: Ảnh */}
           <Col md={5} className="d-flex align-items-center justify-content-center bg-white p-5">
             <div style={{ maxWidth: '350px', width: '100%' }}>
               <Image 
@@ -137,7 +162,6 @@ const ProductScreen = () => {
             </div>
           </Col>
 
-          {/* Cột Phải: Thông tin */}
           <Col md={7} style={{ backgroundColor: '#fcfaf9' }}>
             <div className="p-4 p-md-5 h-100 d-flex flex-column">
               <div>
@@ -149,7 +173,6 @@ const ProductScreen = () => {
                   {product.title}
                 </h1>
 
-                {/* Rating */}
                 <div className="d-flex align-items-center mb-4">
                   <span style={{ color: '#f59e0b', fontSize: '1.1rem', marginRight: '8px' }}>
                     {'★'.repeat(Math.floor(product.rating || 0)) + '☆'.repeat(5 - Math.floor(product.rating || 0))}
@@ -159,12 +182,10 @@ const ProductScreen = () => {
                   </span>
                 </div>
 
-                {/* Giá */}
                 <div className="mb-4" style={{ fontSize: '2rem', fontWeight: 800, color: '#9a3412' }}>
                   {Number(product.price).toLocaleString('vi-VN')} ₫
                 </div>
 
-                {/* Mô tả ngắn */}
                 <p className="text-secondary mb-4" style={{ lineHeight: '1.6', fontSize: '15px' }}>
                   {product.description ? product.description.substring(0, 180) + '...' : 'Đang cập nhật mô tả.'}
                 </p>
@@ -174,7 +195,6 @@ const ProductScreen = () => {
                 <div className="d-flex flex-wrap gap-3 align-items-center">
                   {product.countInStock > 0 ? (
                     <>
-                      {/* Bộ chọn số lượng */}
                       <div className="d-flex align-items-center bg-white border rounded px-2" style={{ height: '48px' }}>
                         <Button 
                           variant="link" 
@@ -252,8 +272,57 @@ const ProductScreen = () => {
                 </div>
               </div>
             ) : (
-              <div className="text-center py-5 text-muted bg-light rounded">
-                Tính năng bình luận đang được phát triển.
+              // ✅ THÊM MỚI: Tab đánh giá
+              <div style={{ maxWidth: '700px' }}>
+                {/* Danh sách reviews */}
+                {!product.reviews || product.reviews.length === 0 ? (
+                  <div className='alert alert-info'>Chưa có đánh giá nào. Hãy là người đầu tiên!</div>
+                ) : (
+                  <div className='mb-4'>
+                    {product.reviews.map((review) => (
+                      <div key={review._id} className='p-3 mb-3 border rounded bg-light'>
+                        <div className='d-flex justify-content-between'>
+                          <strong>{review.name}</strong>
+                          <small className='text-muted'>{new Date(review.createdAt).toLocaleDateString('vi-VN')}</small>
+                        </div>
+                        <div style={{ color: '#f59e0b', fontSize: '18px' }}>
+                          {'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}
+                        </div>
+                        <p className='mb-0 mt-1'>{review.comment}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Form viết review */}
+                <div className='border rounded p-4'>
+                  <h5 className='fw-bold mb-3'>Viết đánh giá của bạn</h5>
+                  {reviewSuccess && <div className='alert alert-success'>✅ Đánh giá thành công!</div>}
+                  {reviewError && <div className='alert alert-danger'>{reviewError}</div>}
+                  {userInfo ? (
+                    <form onSubmit={submitReviewHandler}>
+                      <div className='mb-3'>
+                        <label className='form-label fw-bold'>Số sao</label>
+                        <select className='form-select' value={rating} onChange={(e) => setRating(e.target.value)}>
+                          <option value={5}>⭐⭐⭐⭐⭐ Xuất sắc</option>
+                          <option value={4}>⭐⭐⭐⭐ Tốt</option>
+                          <option value={3}>⭐⭐⭐ Bình thường</option>
+                          <option value={2}>⭐⭐ Tệ</option>
+                          <option value={1}>⭐ Rất tệ</option>
+                        </select>
+                      </div>
+                      <div className='mb-3'>
+                        <label className='form-label fw-bold'>Nhận xét</label>
+                        <textarea className='form-control' rows={4} placeholder='Chia sẻ cảm nhận của bạn về cuốn sách này...' value={comment} onChange={(e) => setComment(e.target.value)} required />
+                      </div>
+                      <button type='submit' className='btn btn-dark px-4'>Gửi đánh giá</button>
+                    </form>
+                  ) : (
+                    <div className='alert alert-warning'>
+                      Vui lòng <a href='/login'>đăng nhập</a> để viết đánh giá.
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
