@@ -10,6 +10,8 @@
     "data:import": "node seeder.js",
     "data:destroy": "node seeder.js -d",
     "data:destroy:books": "node seeder.js -d --books",
+    "data:orders": "node seederOrders.js",
+    "data:users": "node seederUsers.js",
     "data:export": "node scripts/exportData.js",
     "data:restore": "node seeder.js -json",
     "data:clean": "node scripts/cleanBackup.js",

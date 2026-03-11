@@ -4,6 +4,7 @@ const { authUser, getUserProfile, updateUserProfile, registerUser, getUsers, del
 const { protect, admin } = require('../middleware/authMiddleware');
 
 router.post('/login', authUser);
+router.route('/seed').post(protect, admin, require('../seederUsers').importDemoUsersRoute);
 router.route('/profile')
   .get(protect, getUserProfile)
   .put(protect, updateUserProfile);
